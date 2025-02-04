@@ -87,7 +87,7 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 			{
 				EnhancedInput->BindAction(
 					PlayerController->JumpAction,
-					ETriggerEvent::Started,
+					ETriggerEvent::Triggered,
 					this,
 					&APlayerPawn::Jump
 				);
@@ -153,6 +153,7 @@ void APlayerPawn::Jump(const FInputActionValue& value)
 	if (!Controller) return;
 	if (!bIsGrounded) return;
 	AddForce(FVector(0.0f, 0.0f, JumpScalar));
+	bIsGrounded = false;
 }
 
 
@@ -244,7 +245,7 @@ void APlayerPawn::HandleCollision(float DeltaTime)
 			Velocity -= DotProduct * ImpactNormal;
 		}
 
-		if (FMath::IsNearlyEqual(FVector::DotProduct(FVector(0, 0, 1), HitResult.ImpactNormal)/*바닥 확인*/, 1.0f/*일치한다면*/, 0.1f/*오차범위*/))
+		if (FMath::IsNearlyEqual(FVector::DotProduct(FVector(0, 0, 1), HitResult.ImpactNormal)/*바닥 확인*/, 1.0f/*일치한다면*/, 0.0f/*오차범위*/))
 		{
 			bIsGrounded = true;
 			if (Velocity.Z < 0) Velocity.Z = 0;

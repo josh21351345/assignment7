@@ -153,7 +153,6 @@ void APlayerPawn::Jump(const FInputActionValue& value)
 	if (!Controller) return;
 	if (!bIsGrounded) return;
 	AddForce(FVector(0.0f, 0.0f, JumpScalar));
-	bIsGrounded = false;
 }
 
 
@@ -225,6 +224,7 @@ void APlayerPawn::HandleCollision(float DeltaTime)
 
 	FVector NextPosition = GetActorLocation() + Velocity * DeltaTime;//다음 이동할 위치
 
+	bool bIsGround = false;
 
 	bool bHit = GetWorld()->SweepMultiByChannel(
 		HitResults,											//첫번째 막힌 충돌정보가 저장될 구조체
@@ -247,10 +247,11 @@ void APlayerPawn::HandleCollision(float DeltaTime)
 
 		if (FMath::IsNearlyEqual(FVector::DotProduct(FVector(0, 0, 1), HitResult.ImpactNormal)/*바닥 확인*/, 1.0f/*일치한다면*/, 0.0f/*오차범위*/))
 		{
-			bIsGrounded = true;
+			bIsGround = true;
 			if (Velocity.Z < 0) Velocity.Z = 0;
 		}
 	}
 
-	if (!bHit) bIsGrounded = false;
+	if (bIsGround) bIsGrounded = true;
+	else bIsGrounded = false;
 }
